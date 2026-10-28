@@ -19,11 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
--------------------------------------------------------------------------------
-
-This license covers the KarSlides source code and the KarSlides components of
-the binary release. Third-party components, and additional terms that apply to
-the use and distribution of KarSlides together with NDI(R) and Microsoft
-components, are listed in THIRD-PARTY-NOTICES.md. Those terms form part of the
-license terms of every KarSlides binary release.

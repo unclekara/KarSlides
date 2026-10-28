@@ -1,7 +1,9 @@
 # Third-party notices and additional terms
 
-KarSlides is licensed under the MIT License (see `LICENSE`). It uses the components below. Their licenses
-apply to them; the additional terms in sections 1 and 2 apply to everyone who uses or redistributes KarSlides.
+KarSlides is licensed under the MIT License (see `LICENSE`); it covers the KarSlides source code and the KarSlides
+components of the binary release. It uses the components below; their licenses apply to them. The additional terms
+in sections 1 and 2 apply to everyone who uses or redistributes KarSlides together with NDI® and Microsoft
+components, and form part of the license terms of every KarSlides binary release.
 
 ## 1. NDI®
 
