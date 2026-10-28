@@ -199,7 +199,7 @@ public sealed class SlotM2Tests : IDisposable
         var output = new FakeOutputSink();
         var slot = Create(host, output);
         await slot.LoadAsync(_file, 3, default);
-        await slot.PreviousAsync(default); // 2.2 — PowerPoint would report click 0 here
+        await slot.PreviousAsync(default); // 2.2 – PowerPoint would report click 0 here
 
         host.Crash();
         slot.BeginRecovery("POWERPNT.EXE exited");

@@ -12,7 +12,7 @@
     <AssemblyName>KarSlides</AssemblyName>
     <!-- Version, authors and copyright: Directory.Build.props. Icon: tools\make-icon.ps1 from logo.png. -->
     <ApplicationIcon>app.ico</ApplicationIcon>
-    <AssemblyTitle>KarSlides — PowerPoint to vMix over NDI</AssemblyTitle>
+    <AssemblyTitle>KarSlides – PowerPoint to vMix over NDI</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>

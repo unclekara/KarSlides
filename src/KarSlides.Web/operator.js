@@ -1,15 +1,11 @@
 // Operator panel: one card per slot, live through the /ws event stream.
 "use strict";
 
-const { api, events, thumbUrl, el, icon, liveStream } = KS;
+const { api, events, thumbUrl, el, icon, liveStream, t } = KS;
 
 const slots = new Map();      // slot number -> { status, version, view }
 let inbox = [];
 
-const STATE_RU = {
-  empty: "пусто", loading: "загрузка…", ready: "готов", unloading: "выгрузка…",
-  error: "ошибка", recovering: "восстановление…",
-};
 
 // ---------- data ----------
 
@@ -69,7 +65,7 @@ function buildCard(n) {
   v.file = el("span", { class: "file" });
   v.counter = el("div", { class: "counter" });
   v.current = el("img", { alt: "" });
-  v.currentEmpty = el("span", { class: "empty" }, "Нет презентации");
+  v.currentEmpty = el("span", { class: "empty" }, t("op.noShow"));
   v.overlay = el("div", { class: "overlay" });
   v.live = el("img", { class: "live", alt: "" });
   v.currentScreen = el("div", { class: "screen" }, v.current, v.live, v.currentEmpty, v.overlay);
@@ -80,12 +76,12 @@ function buildCard(n) {
     if (s) renderSlot(s);
   });
   v.next = el("img", { alt: "" });
-  v.nextEmpty = el("span", { class: "empty" }, "—");
-  v.nextTitle = el("h3", {}, "Далее");
+  v.nextEmpty = el("span", { class: "empty" }, "–");
+  v.nextTitle = el("h3", {}, t("op.next"));
   v.messages = el("div", { class: "card messages-card" });
   v.strip = el("div", { class: "strip" });
-  v.select = el("select", { title: "Файлы из папки входящих" });
-  v.path = el("input", { type: "text", placeholder: "или полный путь к .pptx" });
+  v.select = el("select", { title: t("op.inboxTitle") });
+  v.path = el("input", { type: "text", placeholder: t("op.pathPlaceholder") });
   v.path.addEventListener("keydown", (e) => { if (e.key === "Enter") load(n); });
 
   const btn = (cls, iconName, label, onclick, title) => {
@@ -97,38 +93,38 @@ function buildCard(n) {
   };
 
   v.black = btn("outlined large", "black", "Black", () => run(n, slots.get(n).status.black ? "unblack" : "black"),
-    "Чёрный кадр в эфир / вернуть картинку");
+    t("op.blackTitle"));
   v.freeze = btn("outlined large", "freeze", "Freeze", () => run(n, slots.get(n).status.freeze ? "unfreeze" : "freeze"),
-    "Заморозить кадр / вернуть живой показ");
+    t("op.freezeTitle"));
 
   v.root = el("section", { class: "slot" },
     el("div", { class: "card stage" },
       el("div", { class: "stage-head" },
-        el("span", { class: "title" }, `Слот ${n}`), v.tally, v.state, v.file, v.counter),
+        el("span", { class: "title" }, t("op.slot", { n })), v.tally, v.state, v.file, v.counter),
       v.currentScreen,
       el("div", { class: "controls" },
         el("div", { class: "btn-group" },
-          btn("large icon-only", "first", "", () => run(n, "first"), "Первый слайд"),
-          btn("large", "prev", "Назад", () => run(n, "prev")),
-          btn("filled hero", null, "Вперёд", () => run(n, "next")),
-          btn("large icon-only", "last", "", () => run(n, "last"), "Последний слайд")),
+          btn("large icon-only", "first", "", () => run(n, "first"), t("op.first")),
+          btn("large", "prev", t("op.prev"), () => run(n, "prev")),
+          btn("filled hero", null, t("op.forward"), () => run(n, "next")),
+          btn("large icon-only", "last", "", () => run(n, "last"), t("op.last"))),
         el("span", { class: "spacer" }),
         v.black, v.freeze,
-        btn("text large", "presenter", "Спикер", () => window.open(`/presenter/${n}${location.search}`, "_blank"),
-          "Экран спикера: текущий и следующий слайд, заметки, таймер"))),
+        btn("text large", "presenter", t("op.presenter"), () => window.open(`/presenter/${n}${location.search}`, "_blank"),
+          t("op.presenterTitle")))),
     el("div", { class: "side" },
       el("div", { class: "card next-card" },
         v.nextTitle,
         el("div", { class: "screen" }, v.next, v.nextEmpty)),
       el("div", { class: "card load-card" },
-        el("h3", {}, "Презентация"),
+        el("h3", {}, t("op.presentation")),
         el("div", { class: "row" }, v.select,
-          btn("icon-only", "refresh", "", refreshInbox, "Обновить список файлов")),
-        el("div", { class: "row" }, v.path, btn("filled", "open", "Загрузить", () => load(n))),
+          btn("icon-only", "refresh", "", refreshInbox, t("op.refreshInbox"))),
+        el("div", { class: "row" }, v.path, btn("filled", "open", t("op.load"), () => load(n))),
         el("div", { class: "row" },
-          btn("outlined", "refresh", "Перезагрузить", () => run(n, "reload", { onAirCheck: true }),
-            "Перечитать файл с диска, позиция сохранится"),
-          btn("danger", "eject", "Выгрузить", () => run(n, "unload", { onAirCheck: true })))),
+          btn("outlined", "refresh", t("op.reload"), () => run(n, "reload", { onAirCheck: true }),
+            t("op.reloadTitle")),
+          btn("danger", "eject", t("op.unload"), () => run(n, "unload", { onAirCheck: true })))),
       v.messages),
     v.strip);
   return v;
@@ -139,8 +135,8 @@ function renderSlot(s) {
   v.root.classList.toggle("program", st.onProgram);
   v.root.classList.toggle("preview", !st.onProgram && st.onPreview);
   v.tally.className = "chip" + (st.onProgram ? " program" : st.onPreview ? " preview" : "");
-  v.tally.textContent = st.onProgram ? "ЭФИР" : st.onPreview ? "ПРЕВЬЮ" : "не в эфире";
-  v.state.textContent = STATE_RU[st.state] || st.state;
+  v.tally.textContent = t(st.onProgram ? "op.onAir" : st.onPreview ? "op.onPreview" : "op.offAir");
+  v.state.textContent = t("state." + st.state);
   v.state.className = "chip" + (st.state === "ready" ? " ready" : st.state === "error" ? " error" : "");
   v.file.textContent = st.file ? st.file.split(/[\\/]/).pop() : "";
   v.file.title = st.file || "";
@@ -149,22 +145,22 @@ function renderSlot(s) {
   const nextSlide = has && st.slide < st.slideCount ? st.slide + 1 : null;
   v.counter.replaceChildren();
   if (has) {
-    v.counter.append(el("span", { class: "num" }, String(st.slide)), el("span", { class: "of" }, `из ${st.slideCount}`));
-    if (st.clickCount) v.counter.append(el("span", { class: "step" }, `шаг ${st.click}/${st.clickCount}`));
+    v.counter.append(el("span", { class: "num" }, String(st.slide)), el("span", { class: "of" }, t("op.of", { n: st.slideCount })));
+    if (st.clickCount) v.counter.append(el("span", { class: "step" }, t("op.step", { click: st.click, count: st.clickCount })));
   }
-  v.nextTitle.textContent = nextSlide ? `Далее · слайд ${nextSlide}` : has ? "Далее · конец презентации" : "Далее";
+  v.nextTitle.textContent = nextSlide ? t("op.nextSlide", { n: nextSlide }) : t(has ? "op.nextEnd" : "op.next");
 
   const curUrl = has && st.thumbnails >= st.slide ? thumbUrl(st.slot, st.slide, s.version) : null;
   setShot(v.current, curUrl);
   v.liveCtl.set(st.state !== "empty");
   v.currentEmpty.hidden = !!curUrl || v.liveOn;
-  v.currentEmpty.textContent = has ? "Нет миниатюры" : "Нет презентации";
+  v.currentEmpty.textContent = t(has ? "op.noThumb" : "op.noShow");
   const nextUrl = nextSlide && st.thumbnails >= nextSlide ? thumbUrl(st.slot, nextSlide, s.version) : null;
   setShot(v.next, nextUrl);
   v.nextEmpty.hidden = !!nextUrl;
   v.currentScreen.classList.toggle("black", st.black);
   v.overlay.replaceChildren();
-  if (v.liveOn) v.overlay.append(el("span", { class: "chip live-chip", title: "Живая картинка: то, что уходит в vMix" },
+  if (v.liveOn) v.overlay.append(el("span", { class: "chip live-chip", title: t("op.liveTitle") },
     el("span", { class: "dot" }), "LIVE"));
   if (st.black) v.overlay.append(el("span", { class: "chip program" }, "BLACK"));
   if (st.freeze) v.overlay.append(el("span", { class: "chip warn" }, "FREEZE"));
@@ -172,11 +168,11 @@ function renderSlot(s) {
   v.black.classList.toggle("selected", st.black);
   v.freeze.classList.toggle("selected", st.freeze);
 
-  v.messages.replaceChildren(el("h3", {}, "Сообщения"));
-  if (st.error) v.messages.append(el("div", { class: "msg error" }, icon("warn"), "Ошибка: " + st.error));
+  v.messages.replaceChildren(el("h3", {}, t("op.messages")));
+  if (st.error) v.messages.append(el("div", { class: "msg error" }, icon("warn"), t("op.error", { message: st.error })));
   for (const w of (st.preflight && st.preflight.warnings) || [])
     v.messages.append(el("div", { class: "msg warning" }, icon("warn"), w));
-  if (v.messages.children.length === 1) v.messages.append(el("div", { class: "msg info" }, "Всё в порядке"));
+  if (v.messages.children.length === 1) v.messages.append(el("div", { class: "msg info" }, t("op.allGood")));
 
   renderStrip(s);
 }
@@ -195,7 +191,7 @@ function renderStrip(s) {
   if (strip.dataset.built !== key) {
     strip.replaceChildren();
     for (let i = 1; i <= st.thumbnails; i++) {
-      strip.append(el("button", { "data-slide": i, title: `Слайд ${i}`, onclick: () => run(st.slot, `goto?slide=${i}`) },
+      strip.append(el("button", { "data-slide": i, title: t("op.slideN", { n: i }), onclick: () => run(st.slot, `goto?slide=${i}`) },
         el("img", { src: thumbUrl(st.slot, i, s.version), alt: "", loading: "lazy" }),
         el("span", {}, String(i))));
     }
@@ -211,7 +207,7 @@ function renderStrip(s) {
 function renderInbox(s) {
   const sel = s.view.select;
   const keep = sel.value;
-  sel.replaceChildren(el("option", { value: "" }, inbox.length ? "— файл из папки входящих —" : "— папка входящих пуста —"));
+  sel.replaceChildren(el("option", { value: "" }, t(inbox.length ? "op.inboxPick" : "op.inboxEmpty")));
   for (const f of inbox) sel.append(el("option", { value: f.path }, f.name));
   sel.value = keep;
 }
@@ -222,7 +218,7 @@ async function run(n, command, { onAirCheck = false } = {}) {
   let path = `/api/slots/${n}/${command}`;
   try {
     if (onAirCheck && slots.get(n).status.onProgram) {
-      if (!confirm(`Слот ${n} сейчас В ЭФИРЕ в vMix. Выполнить «${command}»?`)) return;
+      if (!confirm(t("op.confirmOnAir", { n, command }))) return;
       path += "?force=true";
     }
     // Navigation and output commands accept GET; load/unload/reload need POST.
@@ -236,10 +232,10 @@ async function run(n, command, { onAirCheck = false } = {}) {
 async function load(n) {
   const s = slots.get(n);
   const path = s.view.path.value.trim() || s.view.select.value;
-  if (!path) return flash(n, "Выберите файл или введите путь");
+  if (!path) return flash(n, t("op.pickFile"));
   let url = `/api/slots/${n}/load`;
   if (s.status.onProgram) {
-    if (!confirm(`Слот ${n} сейчас В ЭФИРЕ в vMix. Загрузить другой файл?`)) return;
+    if (!confirm(t("op.confirmLoad", { n }))) return;
     url += "?force=true";
   }
   try {
@@ -255,7 +251,7 @@ let toastTimer = 0;
 function flash(n, message) {
   let t = document.querySelector(".toast");
   if (!t) document.body.append(t = el("div", { class: "toast", role: "alert" }));
-  t.textContent = `Слот ${n}: ${message}`;
+  t.textContent = KS.t("op.toast", { n, message });
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.remove(), 6000);
 }
@@ -267,7 +263,7 @@ function renderProblems(list) {
   const chip = document.getElementById("problemsChip");
   const panel = document.getElementById("problems");
   chip.hidden = list.length === 0;
-  chip.replaceChildren(icon("warn"), `Проблемы: ${list.length}`);
+  chip.replaceChildren(icon("warn"), t("op.problems", { n: list.length }));
   panel.replaceChildren(...list.map(p => el("div", {}, p)));
   if (!list.length) panel.classList.remove("open");
 }
@@ -287,8 +283,8 @@ function renderChip(id, ok, text, title) {
 }
 
 function renderVmix(v) {
-  if (!v) return renderChip("vmix", null, "vMix выкл.");
-  renderChip("vmix", v.connected, v.connected ? `vMix ${v.version || ""}` : "vMix нет связи", v.error || "Связь с vMix");
+  if (!v) return renderChip("vmix", null, t("op.vmixOff"));
+  renderChip("vmix", v.connected, v.connected ? `vMix ${v.version || ""}` : t("op.vmixDown"), v.error || t("op.vmixTitle"));
 }
 
 function renderClicker(on) {
@@ -337,7 +333,7 @@ events((type, data) => {
       break;
   }
 }, (connected) => {
-  renderChip("conn", connected, connected ? "связь есть" : "нет связи", "Связь с KarSlides");
+  renderChip("conn", connected, t(connected ? "op.connected" : "op.disconnected"), t("op.connTitle"));
   if (connected) refreshClicker();
 });
 

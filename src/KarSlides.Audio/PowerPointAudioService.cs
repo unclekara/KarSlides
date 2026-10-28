@@ -6,8 +6,8 @@ namespace KarSlides.Audio;
 
 /// <summary>
 /// Keeps a loopback capture on the current POWERPNT.EXE: one PowerPoint process for all slots, so its
-/// sound goes to one ring (the audio owner slot). Checks once a second; when PowerPoint is (re)started — by a load
-/// or by the watchdog — capture moves to the new process. Without PowerPoint the ring runs dry and the output
+/// sound goes to one ring (the audio owner slot). Checks once a second; when PowerPoint is (re)started – by a load
+/// or by the watchdog – capture moves to the new process. Without PowerPoint the ring runs dry and the output
 /// sends silence. The same loop keeps PowerPoint on its playback device (<see cref="AudioRouteKeeper"/>);
 /// without a ring (Audio.Enabled off) only that runs.
 /// </summary>

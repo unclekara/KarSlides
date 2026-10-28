@@ -11,7 +11,7 @@ it from a web panel, the speaker from a clicker or a presenter page on a phone o
 
 NDI® is a registered trademark of Vizrt NDI AB. Learn more about NDI at https://ndi.video/.
 
-*Описание на русском — ниже.*
+*Описание на русском – ниже.*
 
 ## Features
 
@@ -24,6 +24,7 @@ NDI® is a registered trademark of Vizrt NDI AB. Learn more about NDI at https:/
 - Web operator panel with live preview, thumbnails, next slide, Black/Freeze; presenter page with notes and timer;
   settings page.
 - Clicker support (PageDown/PageUp) while vMix has the focus; vMix tally (program/preview).
+- English and Russian interface with a per-browser RU | EN switch.
 - REST and WebSocket API on port 9180 (vMix ports 8088/8099 are left alone).
 
 ## Requirements
@@ -56,7 +57,7 @@ powershell -File tools/publish-portable.ps1    # artifacts\KarSlides-<version>-w
 | Folder | |
 |---|---|
 | `src/KarSlides.App` | tray application, start-up, settings |
-| `src/KarSlides.Core` | slots, watchdog, clicker, preview — logic behind interfaces, covered by tests |
+| `src/KarSlides.Core` | slots, watchdog, clicker, preview – logic behind interfaces, covered by tests |
 | `src/KarSlides.PowerPoint` | late-bound PowerPoint COM on one STA thread |
 | `src/KarSlides.Capture` | Windows.Graphics.Capture of the show monitor |
 | `src/KarSlides.Ndi` | own P/Invoke wrapper of the NDI runtime, constant-rate sender |
@@ -77,16 +78,16 @@ Vizrt NDI AB, Microsoft or StudioCoast (vMix).
 
 ## KarSlides по-русски
 
-Утилита для Windows: держит PowerPoint в фоне на той же машине, что и vMix, и отдаёт показ в vMix как NDI-источник —
+Утилита для Windows: держит PowerPoint в фоне на той же машине, что и vMix, и отдаёт показ в vMix как NDI-источник –
 с живыми анимациями, переходами, видео и звуком. vMix не теряет фокус.
 
 - Показ идёт на отдельном (лучше виртуальном) мониторе 1920×1080 и захватывается оттуда.
-- Выход NDI всегда с постоянной частотой, чёрный кадр — только по команде Black.
+- Выход NDI всегда с постоянной частотой, чёрный кадр – только по команде Black.
 - Сторожевой таймер перезапускает зависший PowerPoint и возвращает показ на тот же слайд и шаг.
 - Веб-пульт оператора с живой картинкой, экран спикера с заметками и таймером, настройки в браузере.
 - Кликер (PageDown/PageUp) работает, даже когда в фокусе vMix; tally из vMix.
 
-Требования, установка и настройки — в [docs/PORTABLE.md](docs/PORTABLE.md). Готовые сборки — на странице
+Требования, установка и настройки – в [docs/PORTABLE.md](docs/PORTABLE.md). Готовые сборки – на странице
 [Releases](../../releases).
 
-Автор: Aleksandr Karabatov, hellokarabatov@gmail.com. Лицензия — MIT.
+Автор: Aleksandr Karabatov, hellokarabatov@gmail.com. Лицензия – MIT.

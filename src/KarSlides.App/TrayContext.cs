@@ -40,7 +40,7 @@ internal sealed class TrayContext : ApplicationContext
         _icon = new NotifyIcon
         {
             Icon = AppIcon,
-            Text = $"KarSlides {Product.Version} — starting",
+            Text = $"KarSlides {Product.Version} – starting",
             ContextMenuStrip = menu,
             Visible = true,
         };
@@ -59,7 +59,7 @@ internal sealed class TrayContext : ApplicationContext
 
     /// <summary>
     /// Graceful stop from outside (installer, scripts, tests): set the named event and the app exits exactly as
-    /// through the tray menu — shows closed, PowerPoint quit, settings restored.
+    /// through the tray menu – shows closed, PowerPoint quit, settings restored.
     /// </summary>
     public const string ExitEventName = @"Local\KarSlides.App.Exit";
 
@@ -88,7 +88,7 @@ internal sealed class TrayContext : ApplicationContext
     {
         var line = StatusLine();
         _statusItem.Text = line;
-        _icon.Text = Truncate($"KarSlides {Product.Version} — {line}", 63);
+        _icon.Text = Truncate($"KarSlides {Product.Version} – {line}", 63);
         _form?.UpdateText(Details());
     }
 

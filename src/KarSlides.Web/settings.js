@@ -1,17 +1,18 @@
 // Settings page: edits %APPDATA%\KarSlides\settings.json through /api/settings, restarts to apply.
 "use strict";
 
-const { api, el, icon } = KS;
+const { api, el, icon, t, lang } = KS;
 
 let fields = [];           // from the server: path, group, label, kind, help, min, max, choices, danger, current, saved
 const inputs = new Map();  // path -> { field, read(), row }
 let monitors = null;       // GET /api/monitors
 let audioDevices = null;   // GET /api/audio/devices
 
-const CONNECTION_RU = {
-  virtual: "виртуальный", internal: "встроенный экран", hdmi: "HDMI", displayPort: "DisplayPort",
-  dvi: "DVI", vga: "VGA", wireless: "беспроводной", other: "", unknown: "",
+const CONNECTION = {
+  virtual: t("st.conn.virtual"), internal: t("st.conn.internal"), hdmi: "HDMI", displayPort: "DisplayPort",
+  dvi: "DVI", vga: "VGA", wireless: t("st.conn.wireless"), other: "", unknown: "",
 };
+const withLang = (path) => path + (path.includes("?") ? "&" : "?") + "lang=" + lang;
 
 // ---------- values ----------
 
@@ -65,7 +66,7 @@ function control(f) {
     default: { // text, list
       const inp = el("input", { type: "text", spellcheck: "false" });
       inp.value = text(f.saved);
-      if (f.path === "Control.Token") inp.placeholder = "без токена";
+      if (f.path === "Control.Token") inp.placeholder = t("st.noToken");
       inp.addEventListener("input", onEdit);
       return { node: inp, read: () => inp.value };
     }
@@ -77,7 +78,7 @@ function monitorControl(f) {
   const saved = text(Array.isArray(f.saved) ? f.saved[0] : f.saved);
   const sel = el("select", {});
   const info = el("div", { class: "monitor-info" });
-  const describe = (m) => [m.name, `${m.width}×${m.height}`, CONNECTION_RU[m.connection], m.isPrimary ? "основной" : ""]
+  const describe = (m) => [m.name, `${m.width}×${m.height}`, CONNECTION[m.connection], m.isPrimary ? t("st.primary") : ""]
     .filter(Boolean).join(" · ");
   const byValue = new Map();
 
@@ -86,11 +87,11 @@ function monitorControl(f) {
     const m = byValue.get(sel.value);
     if (monitors) {
       const used = monitors.monitors.find(x => x.deviceName === monitors.current.deviceName);
-      lines.push(el("div", {}, "Сейчас показ на: ", el("b", {}, used ? `${describe(used)} (${used.deviceName})` : "монитор не найден")));
+      lines.push(el("div", {}, t("st.showOn"), el("b", {}, used ? `${describe(used)} (${used.deviceName})` : t("st.monitorNotFound"))));
     }
     if (m) for (const n of m.notes) lines.push(el("div", { class: "warn-line" }, n));
     else if (sel.value && sel.value !== "virtual" && monitors)
-      lines.push(el("div", { class: "warn-line" }, "Этот монитор сейчас не подключён: KarSlides будет ждать его при запуске"));
+      lines.push(el("div", { class: "warn-line" }, t("st.monitorMissing")));
     info.replaceChildren(...lines);
   }
 
@@ -98,16 +99,16 @@ function monitorControl(f) {
     sel.replaceChildren();
     const virtuals = monitors.monitors.filter(m => m.isVirtual);
     sel.append(el("option", { value: "virtual" },
-      "Первый виртуальный" + (virtuals.length ? ` → ${describe(virtuals[0])}` : " (сейчас не найден)")));
-    byValue.set("virtual", virtuals[0] && { ...virtuals[0], notes: virtuals[0].notes.filter(n => !n.startsWith("Физический")) });
+      t("st.firstVirtual") + (virtuals.length ? ` → ${describe(virtuals[0])}` : t("st.notFoundNow"))));
+    byValue.set("virtual", virtuals[0]);
     for (const m of monitors.monitors) {
-      const o = el("option", { value: m.value }, describe(m) + (m.suitable ? "" : " — не подходит"));
+      const o = el("option", { value: m.value }, describe(m) + (m.suitable ? "" : t("st.unsuitable")));
       if (!m.suitable) o.disabled = true;
       sel.append(o);
       byValue.set(m.value, m);
     }
     const known = [...sel.options].some(o => o.value.toLowerCase() === saved.toLowerCase());
-    if (!known && saved) sel.append(el("option", { value: saved }, `Своё значение: ${saved}`));
+    if (!known && saved) sel.append(el("option", { value: saved }, t("st.custom", { value: saved })));
     sel.value = [...sel.options].find(o => o.value.toLowerCase() === saved.toLowerCase())?.value ?? "virtual";
     showInfo();
     render();
@@ -116,7 +117,7 @@ function monitorControl(f) {
   sel.append(el("option", { value: saved }, saved || "virtual"));
   sel.value = saved;
   sel.addEventListener("change", () => { showInfo(); onEdit(); });
-  monitorsLoaded.then(fill).catch(() => info.replaceChildren("Список мониторов недоступен"));
+  monitorsLoaded.then(fill).catch(() => info.replaceChildren(t("st.monitorsUnavailable")));
   return {
     node: el("div", { class: "monitor-pick" }, sel, info),
     read: () => sel.value,
@@ -135,35 +136,35 @@ function audioDeviceControl(f) {
     const lines = [];
     if (audioDevices) {
       const cur = audioDevices.current;
-      lines.push(el("div", {}, "Сейчас: ", el("b", {},
-        cur.id ? (cur.name ?? "устройство не подключено") : `по умолчанию Windows → ${cur.name ?? "нет устройств"}`)));
+      lines.push(el("div", {}, t("st.now"), el("b", {},
+        cur.id ? (cur.name ?? t("st.deviceMissing")) : t("st.windowsDefaultIs", { name: cur.name ?? t("st.noDevices") }))));
     }
     const d = sel.value ? byId.get(sel.value) : audioDevices?.devices.find(x => x.isDefault);
     if (sel.value && !d && audioDevices)
-      lines.push(el("div", { class: "warn-line" }, "Устройство сейчас не подключено: PowerPoint будет играть на устройство по умолчанию"));
+      lines.push(el("div", { class: "warn-line" }, t("st.deviceMissingWarn")));
     if (d?.enhancementsEnabled)
-      lines.push(el("div", { class: "warn-line" }, "На этом устройстве включены улучшения звука: звук в NDI отстанет на 20–40 мс"));
+      lines.push(el("div", { class: "warn-line" }, t("st.enhancementsWarn")));
     info.replaceChildren(...lines);
   }
 
   function fill() {
     sel.replaceChildren();
     const def = audioDevices.devices.find(d => d.isDefault);
-    sel.append(el("option", { value: "" }, "По умолчанию Windows" + (def ? ` → ${def.name}` : "")));
+    sel.append(el("option", { value: "" }, t("st.windowsDefault") + (def ? ` → ${def.name}` : "")));
     for (const d of audioDevices.devices) {
-      sel.append(el("option", { value: d.id }, d.name + (d.isDefault ? " · по умолчанию" : "")));
+      sel.append(el("option", { value: d.id }, d.name + (d.isDefault ? t("st.isDefault") : "")));
       byId.set(d.id, d);
     }
-    if (saved && !byId.has(saved)) sel.append(el("option", { value: saved }, "Не подключено: " + saved));
+    if (saved && !byId.has(saved)) sel.append(el("option", { value: saved }, t("st.notConnected", { value: saved })));
     sel.value = saved;
     showInfo();
     render();
   }
 
-  sel.append(el("option", { value: saved }, saved || "По умолчанию Windows"));
+  sel.append(el("option", { value: saved }, saved || t("st.windowsDefault")));
   sel.value = saved;
   sel.addEventListener("change", () => { showInfo(); onEdit(); });
-  audioLoaded.then(fill).catch(() => info.replaceChildren("Список устройств недоступен"));
+  audioLoaded.then(fill).catch(() => info.replaceChildren(t("st.devicesUnavailable")));
   return { node: el("div", { class: "monitor-pick" }, sel, info), read: () => sel.value };
 }
 
@@ -191,7 +192,7 @@ function build() {
     for (const f of list) {
       const c = control(f);
       const range = f.min != null && f.max != null ? ` (${f.min}…${f.max})` : "";
-      const note = el("div", { class: "pending", hidden: "" }, "сохранено, применится после перезапуска");
+      const note = el("div", { class: "pending", hidden: "" }, t("st.pending"));
       const row = el("div", { class: "setting" + (f.danger ? " danger" : "") + (f.kind === "monitor" || f.kind === "audioDevice" ? " wide" : "") },
         el("div", { class: "setting-text" },
           el("label", {}, f.label + range),
@@ -217,7 +218,7 @@ function render() {
   }
   const save = document.getElementById("save");
   save.disabled = dirty === 0;
-  save.replaceChildren(icon("save"), dirty ? `Сохранить (${dirty})` : "Сохранено");
+  save.replaceChildren(icon("save"), dirty ? t("st.save", { n: dirty }) : t("st.saved"));
   const pending = fields.some(f => canon(f.kind, f.saved) !== canon(f.kind, f.current));
   document.getElementById("restartNote").hidden = !pending;
   document.getElementById("restart").classList.toggle("filled", pending);
@@ -231,9 +232,9 @@ function onEdit() {
 // ---------- actions ----------
 
 async function load() {
-  monitorsLoaded = api("GET", "/api/monitors").then(m => { monitors = m; });
+  monitorsLoaded = api("GET", withLang("/api/monitors")).then(m => { monitors = m; });
   audioLoaded = api("GET", "/api/audio/devices").then(a => { audioDevices = a; });
-  const s = await api("GET", "/api/settings");
+  const s = await api("GET", withLang("/api/settings"));
   fields = s.fields;
   document.getElementById("file").textContent = s.file;
   const p = s.product;
@@ -252,16 +253,16 @@ async function save() {
   for (const [path, i] of inputs) if (changed(path)) values[path] = i.read();
   if (!Object.keys(values).length) return;
   const danger = Object.keys(values).filter(p => inputs.get(p).field.danger);
-  if (danger.length && !confirm("Меняется доступ к пульту (порт или токен). После перезапуска пульт откроется по новому адресу. Продолжить?")) return;
+  if (danger.length && !confirm(t("st.confirmDanger"))) return;
   const mon = inputs.get("Slots.Monitors");
   if ("Slots.Monitors" in values && mon?.isPrimary?.()
-      && !confirm("Выбран ОСНОВНОЙ монитор: показ закроет рабочий стол и панель задач этого экрана. Продолжить?")) return;
+      && !confirm(t("st.confirmPrimary"))) return;
   try {
-    const s = await api("PUT", "/api/settings", { values });
+    const s = await api("PUT", withLang("/api/settings"), { values });
     fields = s.fields;
     for (const f of fields) inputs.get(f.path).field = f;
     render();
-    toast("Сохранено. Нажмите «Перезапустить», чтобы применить.");
+    toast(t("st.savedToast"));
   } catch (e) {
     toast(e.message, true);
   }
@@ -277,13 +278,13 @@ function nextUrl() {
 
 async function restart() {
   if (inputs.size && [...inputs.keys()].some(changed)
-      && !confirm("Есть несохранённые изменения, они будут потеряны. Перезапустить?")) return;
+      && !confirm(t("st.confirmUnsaved"))) return;
   let force = false;
   try {
     await api("POST", "/api/restart");
   } catch (e) {
     if (e.status !== 409) return toast(e.message, true);
-    if (!confirm("Слот сейчас В ЭФИРЕ в vMix. На время перезапуска (10–20 с) в эфире будет стоп-кадр. Перезапустить?")) return;
+    if (!confirm(t("st.confirmOnAir"))) return;
     force = true;
     try { await api("POST", "/api/restart?force=true"); } catch (e2) { return toast(e2.message, true); }
   }
@@ -300,7 +301,7 @@ async function restart() {
       if (r.ok) break;
     } catch { /* still restarting */ }
     const s = Math.round((Date.now() - started) / 1000);
-    document.getElementById("restartingText").textContent = `Ждём запуска… ${s} с` + (force ? " (в эфире стоп-кадр)" : "");
+    document.getElementById("restartingText").textContent = t("st.waiting", { s }) + (force ? t("st.waitingFrozen") : "");
     await new Promise(r => setTimeout(r, 1000));
   }
   location.href = target;
@@ -321,10 +322,10 @@ function toast(message, error = false) {
 const back = document.getElementById("back");
 back.append(icon("back"));
 back.href = "/" + location.search;
-document.getElementById("restart").append(icon("refresh"), "Перезапустить");
+document.getElementById("restart").append(icon("refresh"), t("st.restart"));
 document.getElementById("save").addEventListener("click", save);
 document.getElementById("restart").addEventListener("click", restart);
 window.addEventListener("beforeunload", (e) => {
   if ([...inputs.keys()].some(changed)) e.preventDefault();
 });
-load().catch(e => toast("Настройки не загрузились: " + e.message, true));
+load().catch(e => toast(t("st.loadFailed", { message: e.message }), true));

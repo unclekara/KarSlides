@@ -19,20 +19,30 @@ public sealed record MonitorsResponse(int Width, int Height, MonitorSpec Current
 /// </summary>
 public static class MonitorChoices
 {
-    public static MonitorsResponse Build(IReadOnlyList<MonitorDescriptor> monitors, int width, int height, string currentSpec, string savedSpec)
+    public static MonitorsResponse Build(IReadOnlyList<MonitorDescriptor> monitors, int width, int height, string currentSpec, string savedSpec,
+        string? lang = null)
     {
+        var en = SettingsCatalog.IsEnglish(lang);
         MonitorSpec Resolve(string spec) => new(spec, MonitorMatcher.Match(spec, monitors)?.DeviceName);
 
         var choices = monitors.OrderBy(m => m.Left).ThenBy(m => m.Top).Select(m =>
         {
             var notes = new List<string>();
             var sizeOk = m.Width == width && m.Height == height;
-            if (!sizeOk) notes.Add($"Разрешение {m.Width}×{m.Height}, нужно {width}×{height}: поменяйте в параметрах экрана Windows");
-            if (m.IsPrimary) notes.Add("Основной монитор: показ закроет рабочий стол и панель задач");
+            if (!sizeOk) notes.Add(en
+                ? $"Resolution {m.Width}×{m.Height}, {width}×{height} needed: change it in the Windows display settings"
+                : $"Разрешение {m.Width}×{m.Height}, нужно {width}×{height}: поменяйте в параметрах экрана Windows");
+            if (m.IsPrimary) notes.Add(en
+                ? "Primary monitor: the show will cover the desktop and the taskbar"
+                : "Основной монитор: показ закроет рабочий стол и панель задач");
             if (!m.IsVirtual && !m.IsPrimary)
-                notes.Add("Физический монитор или заглушка: зрители этого экрана увидят показ; мышь может заехать на него");
-            if (string.IsNullOrEmpty(m.DeviceId)) notes.Add("Windows не сообщает DeviceID: выбрать нельзя");
-            return new MonitorChoice(m.DeviceId, DisplayName(m), m.DeviceName, m.Connection, m.Width, m.Height, m.Left, m.Top,
+                notes.Add(en
+                    ? "Physical monitor or dummy plug: whoever watches this screen sees the show; the mouse may wander onto it"
+                    : "Физический монитор или заглушка: зрители этого экрана увидят показ; мышь может заехать на него");
+            if (string.IsNullOrEmpty(m.DeviceId)) notes.Add(en
+                ? "Windows does not report a DeviceID: cannot be chosen"
+                : "Windows не сообщает DeviceID: выбрать нельзя");
+            return new MonitorChoice(m.DeviceId, DisplayName(m, lang), m.DeviceName, m.Connection, m.Width, m.Height, m.Left, m.Top,
                 m.IsVirtual, m.IsPrimary, sizeOk && m.DeviceId.Length > 0, notes);
         }).ToArray();
 
@@ -40,10 +50,10 @@ public static class MonitorChoices
     }
 
     /// <summary>EDID name, or what the monitor is, or the model part of the DeviceID (MONITOR\GBT3203\… → GBT3203).</summary>
-    public static string DisplayName(MonitorDescriptor m)
+    public static string DisplayName(MonitorDescriptor m, string? lang = null)
     {
         if (!string.IsNullOrWhiteSpace(m.FriendlyName)) return m.FriendlyName;
-        if (m.Connection == MonitorConnection.Internal) return "Встроенный экран";
+        if (m.Connection == MonitorConnection.Internal) return SettingsCatalog.IsEnglish(lang) ? "Built-in screen" : "Встроенный экран";
         var parts = m.DeviceId.Split('\\');
         return parts.Length > 1 ? parts[1] : m.DeviceName;
     }

@@ -193,7 +193,7 @@ public sealed class SlotControllerTests : IDisposable
         var host = new FakePresentationHost(0, 1);
         var slot = Create(host, new FakeOutputSink());
         await slot.LoadAsync(_file, 2, default);
-        await slot.NextAsync(default); // 2.1 — last click
+        await slot.NextAsync(default); // 2.1 – last click
 
         var s = await slot.NextAsync(default);
 

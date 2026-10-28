@@ -82,7 +82,7 @@ public sealed class AudioOptions
     public double BufferMs { get; set; } = 20;
 
     /// <summary>
-    /// Where PowerPoint plays video sound locally: "" — the Windows default, or an MMDevice id
+    /// Where PowerPoint plays video sound locally: "" – the Windows default, or an MMDevice id
     /// ({0.0.0.00000000}.{guid}). NDI gets the sound either way.
     /// </summary>
     public string OutputDevice { get; set; } = "";

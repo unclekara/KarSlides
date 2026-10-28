@@ -13,7 +13,7 @@
     and the log as 0.4.0+abc1234.
   -->
   <PropertyGroup>
-    <Version>0.7.2</Version>
+    <Version>0.8.0</Version>
     <Product>KarSlides</Product>
     <Authors>Aleksandr Karabatov</Authors>
     <Company>Aleksandr Karabatov</Company>

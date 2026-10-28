@@ -161,18 +161,19 @@ public static class ControlServer
         });
 
         // Settings page of the panel: read and write settings.json, restart to apply.
-        api.MapGet("/settings", (HttpContext ctx) =>
+        // ?lang=en: labels, help and validation messages in English (the panel's language switch).
+        api.MapGet("/settings", (HttpContext ctx, string? lang) =>
             ctx.RequestServices.GetService<SettingsContext>() is { } s
-                ? Results.Ok(SettingsStore.Read(s))
+                ? Results.Ok(SettingsStore.Read(s, lang))
                 : Results.NotFound(new ErrorResponse("Settings are not available")));
-        api.MapPut("/settings", (SettingsUpdate body, HttpContext ctx) =>
+        api.MapPut("/settings", (SettingsUpdate body, HttpContext ctx, string? lang) =>
         {
             if (ctx.RequestServices.GetService<SettingsContext>() is not { } s)
                 return Results.NotFound(new ErrorResponse("Settings are not available"));
             try
             {
-                SettingsStore.Write(s, body);
-                return Results.Ok(SettingsStore.Read(s));
+                SettingsStore.Write(s, body, lang);
+                return Results.Ok(SettingsStore.Read(s, lang));
             }
             catch (ArgumentException ex)
             {
@@ -183,7 +184,7 @@ public static class ControlServer
                 return Results.Json(new ErrorResponse($"Cannot write {s.UserFile}: {ex.Message}"), statusCode: StatusCodes.Status500InternalServerError);
             }
         });
-        api.MapGet("/monitors", (HttpContext ctx) =>
+        api.MapGet("/monitors", (HttpContext ctx, string? lang) =>
         {
             var source = ctx.RequestServices.GetService<MonitorSource>();
             var settings = ctx.RequestServices.GetService<SettingsContext>();
@@ -191,7 +192,7 @@ public static class ControlServer
             var current = settings.Current;
             var saved = settings.LoadSaved();
             return Results.Ok(MonitorChoices.Build(source.Enumerate(), current.Output.Width, current.Output.Height,
-                current.Slots.Monitors.FirstOrDefault() ?? "virtual", saved.Slots.Monitors.FirstOrDefault() ?? "virtual"));
+                current.Slots.Monitors.FirstOrDefault() ?? "virtual", saved.Slots.Monitors.FirstOrDefault() ?? "virtual", lang));
         });
         api.MapGet("/audio/devices", (HttpContext ctx) =>
         {

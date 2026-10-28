@@ -27,7 +27,7 @@ public sealed class LivePreviewOptions
 /// change goes to the inner output unchanged. The newest Live frame is kept in a triple buffer (one copy on the
 /// capture thread, only when the picture changes); a separate thread scales and encodes it to JPEG at most
 /// <see cref="LivePreviewOptions.Fps"/> times a second and only while someone watches. Black gives a black picture,
-/// Freeze keeps the frozen one — the preview shows what vMix gets. Never blocks the output path.
+/// Freeze keeps the frozen one – the preview shows what vMix gets. Never blocks the output path.
 /// </summary>
 public sealed class LivePreview : IOutputSink
 {

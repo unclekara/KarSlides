@@ -1,4 +1,4 @@
-/* KarSlides web UI — Material 3 Expressive, dark scheme from an orange seed (orange + warm grey).
+/* KarSlides web UI – Material 3 Expressive, dark scheme from an orange seed (orange + warm grey).
    Tokens follow M3 colour roles, shape and motion scales; no framework, works offline. */
 :root {
   /* colour roles (dark scheme, seed #FF6D00) */
@@ -209,6 +209,20 @@ body.operator { overflow: hidden; }
   font-size: 18px;
 }
 .spacer { flex: 1; }
+/* RU | EN: the viewer's interface language (stored in this browser) */
+.lang-switch { display: inline-flex; padding: 3px; gap: 2px; border-radius: var(--shape-full, 999px); background: var(--surface-container-high); }
+.lang-switch .lang {
+  border: 0;
+  background: transparent;
+  color: var(--on-surface-variant);
+  font: 600 13px/1 var(--font);
+  letter-spacing: .04em;
+  padding: 7px 10px;
+  border-radius: var(--shape-full, 999px);
+  cursor: pointer;
+}
+.lang-switch .lang:hover { color: var(--on-surface); }
+.lang-switch .lang.selected { background: var(--primary-container); color: var(--on-primary-container); }
 .brand .logo {
   width: 40px;
   height: 40px;
@@ -442,6 +456,7 @@ body.settings { overflow-y: auto; }
 .setting label { font-weight: 500; }
 .setting.danger label { color: var(--error); }
 .setting .help { color: var(--on-surface-variant); font-size: 13px; margin-top: 2px; }
+.setting .help a { color: var(--primary); }
 .setting .pending { color: var(--tertiary); font-size: 12px; margin-top: 4px; }
 .setting select, .setting input[type=text] { width: 100%; height: 44px; }
 .setting .switch { justify-self: end; }

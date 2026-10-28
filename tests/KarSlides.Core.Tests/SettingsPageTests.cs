@@ -142,6 +142,23 @@ public sealed class SettingsPageTests : IAsyncLifetime
     }
 
     [Fact]
+    public void EveryField_HasAnEnglishText() => Assert.Empty(SettingsCatalog.MissingEnglish);
+
+    [Fact]
+    public async Task English_LabelsAndValidationMessages()
+    {
+        var s = JsonDocument.Parse(await _http.GetStringAsync("/api/settings?lang=en")).RootElement;
+        var fps = Field(s, "Output.Fps");
+        Assert.Equal("Frame rate", fps.GetProperty("label").GetString());
+        Assert.Equal("NDI® output", fps.GetProperty("group").GetString());
+        Assert.Equal("Частота кадров", Field(await Get(), "Output.Fps").GetProperty("label").GetString()); // Russian by default
+
+        var r = await _http.PutAsJsonAsync("/api/settings?lang=en", new { values = new Dictionary<string, object> { ["Control.Port"] = 8099 } });
+        Assert.Equal(HttpStatusCode.BadRequest, r.StatusCode);
+        Assert.Contains("ports 8088 and 8099 belong to vMix", await r.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public async Task Restart_OnProgram_NeedsForce()
     {
         _slot.SetTally(new Tally(true, false));

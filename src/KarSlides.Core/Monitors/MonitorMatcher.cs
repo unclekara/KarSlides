@@ -2,8 +2,8 @@ namespace KarSlides.Core.Monitors;
 
 /// <summary>A monitor as enumerated by Windows (filled by KarSlides.Capture).</summary>
 public sealed record MonitorDescriptor(
-    string DeviceName,   // \\.\DISPLAY5 — changes between boots for IddCx monitors
-    string DeviceId,     // MONITOR\MTT1337\{...} — stable
+    string DeviceName,   // \\.\DISPLAY5 – changes between boots for IddCx monitors
+    string DeviceId,     // MONITOR\MTT1337\{...} – stable
     string AdapterName,
     bool IsVirtual,
     bool IsPrimary,
@@ -20,9 +20,9 @@ public enum MonitorConnection { Unknown, Virtual, Internal, Hdmi, DisplayPort, D
 /// <summary>
 /// Resolves a monitor spec from the config to the current monitor. Specs:
 /// <list type="bullet">
-/// <item><c>virtual</c> / <c>virtual:2</c> — first / second virtual monitor (by position, left to right);</item>
-/// <item><c>\\.\DISPLAY5</c> — exact device name (not stable for virtual monitors);</item>
-/// <item>anything else — case-insensitive substring of the monitor DeviceID, e.g. <c>MTT1337</c> (leftmost if several).</item>
+/// <item><c>virtual</c> / <c>virtual:2</c> – first / second virtual monitor (by position, left to right);</item>
+/// <item><c>\\.\DISPLAY5</c> – exact device name (not stable for virtual monitors);</item>
+/// <item>anything else – case-insensitive substring of the monitor DeviceID, e.g. <c>MTT1337</c> (leftmost if several).</item>
 /// </list>
 /// </summary>
 public static class MonitorMatcher

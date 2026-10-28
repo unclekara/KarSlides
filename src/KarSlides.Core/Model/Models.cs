@@ -40,7 +40,7 @@ public readonly record struct ShowPosition(int Slide, int Click)
 
 /// <summary>
 /// What PowerPoint reports. ClickIndex is not reliable after Previous. <see cref="Paused"/>: PowerPoint
-/// paused the show itself — it does so when a document window opens in the same process and never resumes it
+/// paused the show itself – it does so when a document window opens in the same process and never resumes it
 ///. <see cref="OtherWindows"/>: document windows open in PowerPoint; KarSlides opens its presentations
 /// without windows, so these are someone else's.
 /// </summary>

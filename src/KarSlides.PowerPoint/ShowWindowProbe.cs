@@ -5,7 +5,7 @@ namespace KarSlides.PowerPoint;
 
 /// <summary>
 /// Answers "is the slot monitor covered by a PowerPoint slide show window right now?" for the capture gate:
-/// frames are published only while it is, so the desktop of the virtual monitor never reaches the output —
+/// frames are published only while it is, so the desktop of the virtual monitor never reaches the output –
 /// not after PowerPoint is killed or crashes, not when someone closes the show. A desktop frame
 /// always arrives after the window is gone, so the check cannot lose that race. Cheap: the last window found
 /// is re-checked with a few user32 calls; the window list is enumerated only when it is gone.

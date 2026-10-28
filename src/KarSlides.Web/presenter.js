@@ -2,7 +2,7 @@
 // Read-only: the speaker drives slides with the clicker; this page never sends navigation commands.
 "use strict";
 
-const { api, events, thumbUrl, el, icon, liveStream } = KS;
+const { api, events, thumbUrl, el, icon, liveStream, t, lang } = KS;
 
 const slot = Number(location.pathname.split("/").filter(Boolean)[1] || 1);
 let status = null;
@@ -35,20 +35,20 @@ function render() {
   const st = status;
   const has = st && st.slideCount > 0;
   const counter = document.getElementById("counter");
-  if (has) counter.replaceChildren("Слайд ", el("b", {}, String(st.slide)), ` из ${st.slideCount}`);
-  else counter.textContent = "Нет презентации";
+  if (has) counter.replaceChildren(t("pr.slide"), el("b", {}, String(st.slide)), t("pr.of", { n: st.slideCount }));
+  else counter.textContent = t("pr.noShow");
   document.getElementById("state").textContent =
-    !st ? "" : st.black ? "ЧЁРНЫЙ ЭКРАН" : st.freeze ? "ЗАМОРОЖЕНО" : st.clickCount ? `шаг ${st.click} из ${st.clickCount}` : "";
+    !st ? "" : st.black ? t("pr.black") : st.freeze ? t("pr.frozen") : st.clickCount ? t("pr.step", { click: st.click, count: st.clickCount }) : "";
 
   setShot("current", has && st.thumbnails >= st.slide ? thumbUrl(slot, st.slide, version) : null);
   live.set(!!st && st.state !== "empty");
   const next = has && st.slide < st.slideCount ? st.slide + 1 : null;
   setShot("next", next && st.thumbnails >= next ? thumbUrl(slot, next, version) : null);
-  document.getElementById("nextNotes").textContent = next ? (notes[next - 1] || "").split("\n")[0] : "Последний слайд";
+  document.getElementById("nextNotes").textContent = next ? (notes[next - 1] || "").split("\n")[0] : t("pr.lastSlide");
 
   const text = has ? (notes[st.slide - 1] || "") : "";
   const box = document.getElementById("notes");
-  box.textContent = text || "Нет заметок";
+  box.textContent = text || t("pr.noNotes");
   box.classList.toggle("empty", !text);
 }
 
@@ -76,11 +76,11 @@ function tick() {
   t.textContent = fmt(total);
   t.classList.toggle("running", !!started);
   document.getElementById("clock").textContent =
-    new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+    new Date().toLocaleTimeString(lang === "ru" ? "ru-RU" : "en-GB", { hour: "2-digit", minute: "2-digit" });
 }
 
 function renderTimerButton() {
-  document.getElementById("timerToggle").replaceChildren(...(started ? [icon("pause"), "Пауза"] : [icon("play"), "Старт"]));
+  document.getElementById("timerToggle").replaceChildren(...(started ? [icon("pause"), t("pr.pause")] : [icon("play"), t("pr.start")]));
 }
 
 document.getElementById("timerToggle").addEventListener("click", () => {
@@ -93,7 +93,7 @@ document.getElementById("timerToggle").addEventListener("click", () => {
   renderTimerButton();
   tick();
 });
-document.getElementById("timerReset").replaceChildren(icon("reset"), "Сброс");
+document.getElementById("timerReset").replaceChildren(icon("reset"), t("pr.reset"));
 renderTimerButton();
 
 document.getElementById("timerReset").addEventListener("click", () => {

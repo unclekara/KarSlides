@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>KarSlides — пульт</title>
+  <title data-i18n="op.pageTitle">KarSlides – пульт</title>
   <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="/style.css">
 </head>
@@ -12,20 +12,22 @@
   <div class="app">
     <header class="topbar">
       <div class="brand"><img class="logo" src="/logo.png" alt="">KarSlides<span id="version" class="version"></span></div>
-      <span id="conn" class="chip bad" title="Связь с KarSlides"><span class="dot"></span>нет связи</span>
-      <span id="vmix" class="chip" title="Связь с vMix"><span class="dot"></span>vMix ?</span>
+      <span id="conn" class="chip bad" data-i18n-title="op.connTitle"><span class="dot"></span></span>
+      <span id="vmix" class="chip" data-i18n-title="op.vmixTitle"><span class="dot"></span>vMix ?</span>
       <button id="problemsChip" class="chip warn" hidden></button>
       <span class="spacer"></span>
       <div id="clicker" class="switch" role="switch" aria-checked="false" tabindex="0"
-           title="Глобальный кликер: работает, даже когда в фокусе vMix">
+           data-i18n-title="op.clickerTitle">
         <span class="track"><span class="thumb"></span></span>
-        <span><span class="label">Кликер</span><br><span class="hint">PageDown — вперёд · PageUp — назад</span></span>
+        <span><span class="label" data-i18n="op.clicker"></span><br><span class="hint" data-i18n="op.clickerHint"></span></span>
       </div>
-      <a id="settingsLink" class="btn text icon-only" href="/settings" title="Настройки"></a>
+      <div id="langSwitch" class="lang-switch"></div>
+      <a id="settingsLink" class="btn text icon-only" href="/settings" data-i18n-title="op.settings"></a>
       <div id="problems" class="problems-panel"></div>
     </header>
     <main id="slots" class="slots"></main>
   </div>
+  <script src="/i18n.js"></script>
   <script src="/common.js"></script>
   <script src="/operator.js"></script>
 </body>

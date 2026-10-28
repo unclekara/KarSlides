@@ -5,6 +5,56 @@
 const KS = (() => {
   const token = new URLSearchParams(location.search).get("token");
 
+  // ---------- language: chosen per browser (operator and speaker may differ), default from the browser ----------
+
+  const LANGS = ["ru", "en"];
+  const LANG_KEY = "karslides.lang";
+
+  function storedLang() {
+    try { return localStorage.getItem(LANG_KEY); } catch { return null; }
+  }
+
+  const lang = LANGS.includes(storedLang()) ? storedLang()
+    : (navigator.language || "").toLowerCase().startsWith("ru") ? "ru" : "en";
+  document.documentElement.lang = lang;
+
+  /** Text of a key in the page language (i18n.js), {name} replaced by params.name. */
+  function t(key, params = {}) {
+    let s = KS_I18N[lang][key] ?? KS_I18N.ru[key] ?? key;
+    for (const [k, v] of Object.entries(params)) s = s.replaceAll(`{${k}}`, String(v));
+    return s;
+  }
+
+  function setLang(l) {
+    try { localStorage.setItem(LANG_KEY, l); } catch { /* private mode: this page only */ }
+    location.reload();
+  }
+
+  /** Static markup: data-i18n sets the text, data-i18n-title / data-i18n-placeholder the attributes. */
+  function applyI18n(root = document) {
+    for (const e of root.querySelectorAll("[data-i18n]")) e.textContent = t(e.dataset.i18n);
+    for (const e of root.querySelectorAll("[data-i18n-title]")) e.title = t(e.dataset.i18nTitle);
+    for (const e of root.querySelectorAll("[data-i18n-placeholder]")) e.placeholder = t(e.dataset.i18nPlaceholder);
+  }
+
+  /** RU | EN switch into #langSwitch of the page; a choice reloads the page in that language. */
+  function mountLangSwitch() {
+    const host = document.getElementById("langSwitch");
+    if (!host) return;
+    host.title = t("lang.title");
+    host.replaceChildren(...LANGS.map(l => {
+      const b = document.createElement("button");
+      b.className = "lang" + (l === lang ? " selected" : "");
+      b.textContent = l.toUpperCase();
+      b.setAttribute("aria-pressed", String(l === lang));
+      b.addEventListener("click", () => { if (l !== lang) setLang(l); });
+      return b;
+    }));
+  }
+
+  applyI18n();
+  mountLangSwitch();
+
   function withToken(url) {
     if (!token) return url;
     return url + (url.includes("?") ? "&" : "?") + "token=" + encodeURIComponent(token);
@@ -138,5 +188,5 @@ const KS = (() => {
     return svg;
   }
 
-  return { api, events, thumbUrl, el, icon, liveStream };
+  return { api, events, thumbUrl, el, icon, liveStream, t, lang };
 })();

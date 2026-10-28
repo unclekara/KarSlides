@@ -13,7 +13,7 @@ public interface IAudioRouter
 {
     IReadOnlyList<PlaybackDevice> Devices();
 
-    /// <summary>Routes the process to the device; null — back to the Windows default.</summary>
+    /// <summary>Routes the process to the device; null – back to the Windows default.</summary>
     void Route(uint pid, string? deviceId);
 
     /// <summary>The device the process is routed to, "" when it follows the Windows default.</summary>
@@ -26,7 +26,7 @@ public sealed record AudioRouteState(PlaybackDevice? Effective, string? Warning)
 /// <summary>
 /// Keeps POWERPNT.EXE on the configured playback device (Audio.OutputDevice, "" = Windows default). Windows
 /// persists the choice per application, so: it is (re)applied to every new PowerPoint process (load, watchdog
-/// restart), re-applied when the device comes back, and reset to the default on exit — otherwise PowerPoint
+/// restart), re-applied when the device comes back, and reset to the default on exit – otherwise PowerPoint
 /// started by hand later would still play there. With "" a choice left over by a crash is reset.
 /// Called once a second from the audio thread; does real work on a new process and every
 /// <see cref="CheckEveryTicks"/> ticks. A PowerPoint that has just started does not answer the device query for a

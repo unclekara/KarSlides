@@ -74,7 +74,7 @@ endorse KarSlides.
 | Serilog.Sinks.File | 6.0.0 | Apache-2.0 | Serilog Contributors |
 | Microsoft.Extensions.* (DependencyInjection, Logging, Options, Primitives) | 8.0.x | MIT | .NET Foundation and Contributors |
 | System.Text.Json, System.Text.Encodings.Web, System.IO.Pipelines | 9.0.1 | MIT | .NET Foundation and Contributors |
-| Material Symbols (icon paths inlined in `src/KarSlides.Web/common.js`) | — | Apache-2.0 | Google LLC |
+| Material Symbols (icon paths inlined in `src/KarSlides.Web/common.js`) | – | Apache-2.0 | Google LLC |
 
 Used only to build and test, not distributed: xunit, xunit.runner.visualstudio (Apache-2.0),
 Microsoft.NET.Test.Sdk, Microsoft.AspNetCore.TestHost (MIT).
