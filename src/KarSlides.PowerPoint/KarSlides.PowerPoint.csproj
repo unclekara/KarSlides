@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- PowerPoint COM host (late binding) on a single STA thread, show placement, focus guard. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>KarSlides.PowerPoint</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KarSlides.Core\KarSlides.Core.csproj" />
+    <InternalsVisibleTo Include="KarSlides.Core.Tests" />
+  </ItemGroup>
+
+</Project>

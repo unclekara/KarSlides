@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>KarSlides — настройки</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="settings">
+  <div class="settings-app">
+    <header class="topbar">
+      <a id="back" class="btn text icon-only" href="/" title="К пульту"></a>
+      <div class="brand"><img class="logo" src="/logo.png" alt="">Настройки<span id="version" class="version"></span></div>
+      <span id="file" class="file-path"></span>
+      <span class="spacer"></span>
+      <span id="restartNote" class="chip warn" hidden>Изменения применятся после перезапуска</span>
+      <button id="restart" class="btn outlined" title="Перезапустить KarSlides, чтобы применить сохранённые настройки"></button>
+      <button id="save" class="btn filled" disabled></button>
+    </header>
+    <main id="groups" class="settings-groups"></main>
+    <footer id="about" class="about"></footer>
+  </div>
+  <div id="restarting" class="restarting" hidden>
+    <div class="card">
+      <h2>Перезапуск KarSlides…</h2>
+      <p id="restartingText">Показ закрывается и запускается заново, обычно 10–20 секунд.</p>
+    </div>
+  </div>
+  <script src="/common.js"></script>
+  <script src="/settings.js"></script>
+</body>
+</html>

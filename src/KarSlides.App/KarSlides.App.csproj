@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Entry point: tray, DI host, single instance, environment checks. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <WindowsSdkPackageVersion>10.0.22621.57</WindowsSdkPackageVersion>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RootNamespace>KarSlides.App</RootNamespace>
+    <AssemblyName>KarSlides</AssemblyName>
+    <!-- Version, authors and copyright: Directory.Build.props. Icon: tools\make-icon.ps1 from logo.png. -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <AssemblyTitle>KarSlides — PowerPoint to vMix over NDI</AssemblyTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <InternalsVisibleTo Include="KarSlides.Core.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KarSlides.Core\KarSlides.Core.csproj" />
+    <ProjectReference Include="..\KarSlides.Ndi\KarSlides.Ndi.csproj" />
+    <ProjectReference Include="..\KarSlides.Audio\KarSlides.Audio.csproj" />
+    <ProjectReference Include="..\KarSlides.Vmix\KarSlides.Vmix.csproj" />
+    <ProjectReference Include="..\KarSlides.Capture\KarSlides.Capture.csproj" />
+    <ProjectReference Include="..\KarSlides.PowerPoint\KarSlides.PowerPoint.csproj" />
+    <ProjectReference Include="..\KarSlides.Control\KarSlides.Control.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Web UI: plain files, copied next to the exe into web\ -->
+    <Content Include="..\KarSlides.Web\**\*" LinkBase="web" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+  </ItemGroup>
+
+</Project>

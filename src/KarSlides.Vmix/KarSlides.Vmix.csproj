@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- vMix TCP API (tally) and XML API (input mapping). -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>KarSlides.Vmix</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KarSlides.Core\KarSlides.Core.csproj" />
+  </ItemGroup>
+
+</Project>

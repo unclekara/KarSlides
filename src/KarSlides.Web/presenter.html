@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>KarSlides — спикер</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="presenter">
+  <div class="presenter-grid">
+    <div class="presenter-top">
+      <span id="counter" class="counter-big">—</span>
+      <span id="state" class="state-line"></span>
+      <span class="spacer"></span>
+      <span id="timer" class="timer">00:00</span>
+      <div class="btn-group">
+        <button id="timerToggle" class="btn filled" title="Старт / пауза таймера"></button>
+        <button id="timerReset" class="btn" title="Сбросить таймер"></button>
+      </div>
+      <span id="clock" class="clock">--:--</span>
+    </div>
+    <div class="presenter-main">
+      <div class="shot-box">
+        <img id="current" class="shot" alt="">
+        <img id="live" class="shot live" alt="">
+      </div>
+      <div class="label">Заметки</div>
+      <div id="notes" class="notes empty">Нет заметок</div>
+    </div>
+    <div class="presenter-side">
+      <div class="label">Следующий слайд</div>
+      <img id="next" class="shot" alt="">
+      <div id="nextNotes" class="next-notes"></div>
+    </div>
+  </div>
+  <script src="/common.js"></script>
+  <script src="/presenter.js"></script>
+</body>
+</html>

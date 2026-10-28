@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <!--
+    Version of the whole product: SemVer, the only place it is set. Bump it with an entry in
+    CHANGELOG.md. The SDK appends the git commit to the informational version (0.4.0+<sha>), shown in the UI
+    and the log as 0.4.0+abc1234.
+  -->
+  <PropertyGroup>
+    <Version>0.7.2</Version>
+    <Product>KarSlides</Product>
+    <Authors>Aleksandr Karabatov</Authors>
+    <Company>Aleksandr Karabatov</Company>
+    <Copyright>© 2026 Aleksandr Karabatov &lt;hellokarabatov@gmail.com&gt;</Copyright>
+  </PropertyGroup>
+</Project>

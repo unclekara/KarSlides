@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Own P/Invoke to NDI SDK 6 (runtime from NDI_RUNTIME_DIR_V6) and the constant-fps output. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>KarSlides.Ndi</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KarSlides.Core\KarSlides.Core.csproj" />
+    <InternalsVisibleTo Include="KarSlides.Core.Tests" />
+  </ItemGroup>
+
+</Project>
